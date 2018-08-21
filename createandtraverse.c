@@ -1,52 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 struct node {
     int data;
+    struct node * prev;
     struct node * next;
-}*head;
+}*head, *last;
+
 
 void createList(int n);
-void displayList();
+void displayListFromFirst();
+void displayListFromEnd();
 
 
 int main()
 {
-    int n, data, choice=1;
+    int n, choice;
     
     head = NULL;
- 
-    while(choice != 0)
+    last = NULL;
+    
+    printf("Enter the number of nodes you want to create: ");
+    scanf("%d", &n);
+    
+    createList(n);
+    
+    printf("\nPress 1 to display list from First");
+    printf("\nPress 2 to display list from End : ");
+    scanf("%d", &choice);
+    
+    if(choice==1)
     {
-        printf("============================================\n");
-        printf("CIRCULAR LINKED LIST PROGRAM\n");
-        printf("============================================\n");
-        printf("1. Create List\n");
-        printf("2. Display list\n");
-        printf("0. Exit\n");
-        printf("--------------------------------------------\n");
-        printf("Enter your choice : ");
-        
-        scanf("%d", &choice);
-        
-        switch(choice)
-        {
-            case 1:
-                printf("Enter the total number of nodes in list: ");
-                scanf("%d", &n);
-                createList(n);
-                break;
-            case 2:
-                displayList();
-                break;
-            case 0:
-                break;
-            default:
-                printf("Error! Invalid choice. Please choose between 0-2");
-        }
-        
-        printf("\n\n\n\n\n");
+        displayListFromFirst();
+    }
+    else if(choice == 2)
+    {
+        displayListFromEnd();
     }
     
     return 0;
@@ -55,63 +44,103 @@ int main()
 void createList(int n)
 {
     int i, data;
-    struct node *prevNode, *newNode;
+    struct node *newNode;
     
     if(n >= 1)
     {
         head = (struct node *)malloc(sizeof(struct node));
         
-        printf("Enter data of 1 node: ");
-        scanf("%d", &data);
-        
-        head->data = data;
-        head->next = NULL;
-        
-        prevNode = head;
-        
-        
-        for(i=2; i<=n; i++)
+        if(head != NULL)
         {
-            newNode = (struct node *)malloc(sizeof(struct node));
-            
-            printf("Enter data of %d node: ", i);
+            printf("Enter data of 1 node: ");
             scanf("%d", &data);
             
-            newNode->data = data;
-            newNode->next = NULL;
+            head->data = data;
+            head->prev = NULL;
+            head->next = NULL;
             
+            last = head;
+           
+            for(i=2; i<=n; i++)
+            {
+                newNode = (struct node *)malloc(sizeof(struct node));
+                
+                if(newNode != NULL)
+                {
+                    printf("Enter data of %d node: ", i);
+                    scanf("%d", &data);
+                    
+                    newNode->data = data;
+                    newNode->prev = last;
+                    newNode->next = NULL;
+                    
+                    last->next = newNode;
+                    last = newNode;
+                }
+                else
+                {
+                    printf("Unable to allocate memory.");
+                    break;
+                }
+            }
             
-            prevNode->next = newNode;
-            
-            
-            prevNode = newNode;
+            printf("\nDOUBLY LINKED LIST CREATED SUCCESSFULLY\n");
         }
-       
-        prevNode->next = head;
-        
-        printf("\nCIRCULAR LINKED LIST CREATED SUCCESSFULLY\n");
+        else
+        {
+            printf("Unable to allocate memory");
+        }
     }
 }
-
-void displayList()
+/
+void displayListFromFirst()
 {
-    struct node *current;
+    struct node * temp;
     int n = 1;
     
     if(head == NULL)
     {
-        printf("List is empty.\n");
+        printf("List is empty.");
     }
     else
     {
-        current = head;
-        printf("DATA IN THE LIST:\n");
+        temp = head;
+        printf("\n\nDATA IN THE LIST:\n");
         
-        do {
-            printf("Data %d = %d\n", n, current->data);
+        while(temp != NULL)
+        {
+            printf("DATA of %d node = %d\n", n, temp->data);
             
-            current = current->next;
             n++;
-        }while(current != head);
+            
+            
+            temp = temp->next;
+        }
+    }
+}
+
+void displayListFromEnd()
+{
+    struct node * temp;
+    int n = 0;
+    
+    if(last == NULL)
+    {
+        printf("List is empty.");
+    }
+    else
+    {
+        temp = last;
+        printf("\n\nDATA IN THE LIST:\n");
+        
+        while(temp != NULL)
+        {
+            printf("DATA of last-%d node = %d\n", n, temp->data);
+            
+            n++;
+            
+            
+            temp = temp->prev; 
+        }
     }
 }
