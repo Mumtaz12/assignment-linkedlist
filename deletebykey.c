@@ -1,177 +1,145 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node {
-    int data;
-    struct node * next;
-};
 
-void createList(struct node ** head, int n);
-void displayList(struct node ** head);
-void deleteAll(struct node ** head, int key);
+struct node
+{
+    int data;
+    struct node *next;
+} * head;
+
+
+
+void createList(int n);
+void deleteFirstByKey(int key);
+void displayList();
 
 
 int main()
 {
-    int n, key, data, choice;
+    int n, key;
     
-    struct node * head = NULL;
+    printf("Enter number of node to create: ");
+    scanf("%d", &n);
     
-    while(choice != 0)
-    {
-        printf("--------------------------------------------\n");
-        printf("        CIRCULAR LINKED LIST PROGRAM        \n");
-        printf("--------------------------------------------\n");
-        printf("1. Create List\n");
-        printf("2. Display list\n");
-        printf("3. Delete all by key\n");
-        printf("0. Exit\n");
-        printf("--------------------------------------------\n");
-        printf("Enter your choice : ");
-        
-        scanf("%d", &choice);
-        
-        switch(choice)
-        {
-            case 1:
-                printf("Enter number of nodes to create: ");
-                scanf("%d", &n);
-                createList(&head, n);
-                break;
-                
-            case 2:
-                displayList(&head);
-                break;
-                
-            case 3:
-                printf("Enter key to delete from list: ");
-                scanf("%d", &key);
-                deleteAll(&head, key);
-                break;
-                
-            case 0:
-                exit(0);
-                break;
-                
-            default:
-                printf("Error! Invalid choice. Please choose between 0-3");
-        }
-        
-        printf("\n\n\n\n");
-    }
+    createList(n);
+    
+    
+    printf("\nData in list before deletion\n");
+    displayList();
+    
+    printf("\nEnter element to delete with key: ");
+    scanf("%d", &key);
+    
+    
+    deleteFirstByKey(key);
+    
+   
+    printf("\nData in list after deletion\n");
+    displayList();
     
     return 0;
 }
 
-void deleteAll(struct node ** head, int key)
+void createList(int n)
 {
-    int i, count;
-    struct node *prev, *cur;
+    struct node *newNode, *temp;
+    int data, i;
     
-    if (*head == NULL)
+    head = malloc(sizeof(struct node));
+    
+    
+    if (head == NULL)
     {
-        printf("List is empty.\n");
-        return;
+        printf("Unable to allocate memory. Exiting from app.");
+        exit(0);
     }
     
-    count = 0;
-    cur   = *head;
-    prev  = cur;
-
-    while (prev->next != *head)
-    {
-        prev = prev->next;
-        count++;
-    }
     
-  
-    i = 0;
-    while (i <= count)
-    {
-        if (cur->data == key)
-        {
-            
-            if (cur->next != cur)
-                prev->next = cur->next;
-            else
-                prev->next = NULL;
-            
-            
-            if (cur == *head)
-                *head = prev->next;
-            
-            
-            free(cur);
-            
-            
-            if (prev != NULL)
-                cur = prev->next;
-            else
-                cur = NULL;
-        }
-        else
-        {
-            prev = cur;
-            cur  = cur->next;
-        }
-        
-        
-        i++;
-        
-    }
-}
-
-void createList(struct node ** head, int n)
-{
-    int i, data;
-    struct node *prevNode, *newNode;
+    printf("Enter data of node 1: ");
+    scanf("%d", &data);
     
-    prevNode = NULL;
+    head->data = data;
+    head->next = NULL;
     
+    temp = head;
     
-    for(i=1; i<=n; i++)
+    for (i = 2; i <= n; i++)
     {
         newNode = malloc(sizeof(struct node));
         
-        printf("Enter data of %d node: ", i);
+       
+        if (newNode == NULL)
+        {
+            printf("Unable to allocate memory. Exiting from app.");
+            exit(0);
+        }
+        
+        printf("Enter data of node %d: ", i);
         scanf("%d", &data);
         
         newNode->data = data;
         newNode->next = NULL;
-        
-        if (prevNode != NULL)
-            prevNode->next = newNode;
-        
-        if (*head == NULL)
-            *head = newNode;
-        
-        prevNode = newNode;
+        temp->next = newNode;         temp = temp->next;
     }
     
-    
-    prevNode->next = *head;
-    
-    printf("\nCIRCULAR LINKED LIST CREATED SUCCESSFULLY\n");
 }
 
-void displayList(struct node ** head)
+void displayList()
 {
-    struct node *current;
-    int n = 1;
+    struct node *temp;
     
-    if(*head == NULL)
+    if (head == NULL)
     {
         printf("List is empty.\n");
         return;
     }
     
-    current = *head;
-    printf("DATA IN THE LIST:\n");
-    
-    do {
-        printf("Data %d = %d\n", n, current->data);
+    temp = head;
+    while (temp != NULL)
+    {
+        printf("%d, ", temp->data);
         
-        current = current->next;
-        n++;
-    }while(current != *head);
+        temp = temp->next;
+    }
+    
+    printf("\n");
+}
+
+void deleteFirstByKey(int key)
+{
+    struct node *prev, *cur;
+    
+    
+    while (head != NULL && head->data == key)
+    {
+        
+        prev = head;
+        
+        head = head->next;
+        free(prev);
+        
+        return;
+    }
+    
+    prev = NULL;
+    cur  = head;
+    
+   
+    while (cur != NULL)
+    {
+               if (cur->data == key)
+        {
+           
+            if (prev != NULL)
+                prev->next = cur->next;
+            
+            free(cur);
+            
+            return;
+        } 
+        
+        prev = cur;
+        cur = cur->next;
+    }
 }
